@@ -126,3 +126,26 @@ CREATE TABLE IF NOT EXISTS entreprise_btp (
     longitude        DOUBLE PRECISION,
     insee_code       TEXT REFERENCES commune (insee_code)
 );
+
+
+CREATE TABLE festivals_france (
+    id SERIAL PRIMARY KEY,
+
+    identifiant_festival VARCHAR(50),          -- ex : FEST_11262_4331
+    nom_du_festival TEXT,
+    region_principale TEXT,
+    departement_principal TEXT,
+    commune_principale TEXT,
+
+    code_postal VARCHAR(10),
+    code_insee_commune TEXT REFERENCES commune (insee_code),
+
+    adresse_postale TEXT,
+    discipline_dominante TEXT,
+    site_internet TEXT,
+
+    latitude DOUBLE PRECISION,
+    longitude DOUBLE PRECISION,
+
+    date_import TIMESTAMP DEFAULT NOW()
+);
