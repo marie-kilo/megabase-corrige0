@@ -19,18 +19,41 @@ import collect
 import clean
 import load
 
-# Le département est passé en argument : python3 main.py 38  (défaut 69).
+#def normalize_dept(d):pour la france métropolitaine, on peut se contenter de .upper().zfill(2) pour avoir "01"..."95" et "2A"/"2B".
+#Pour les DOM, il faut un peu plus de logique (971...976, 977, 978, 984, 986, 987, 988). 
+#On peut aussi lever une exception si le département est invalide.
+
+def normalize_dept(d):
+    d = d.upper()
+    # Métropole 01–95
+    if d.isdigit() and len(d) <= 2:
+        return d.zfill(2)
+    # DOM 971–976
+    if d.isdigit() and len(d) == 3:
+        return d
+    # Corse 2A / 2B
+    if d in ("2A", "2B"):
+        return d
+    # COM 977, 978, 984, 986, 987, 988
+    if d in ("977", "978", "984", "986", "987", "988"):
+        return d
+    raise ValueError(f"Département invalide : {d}")
+
+DEPT = normalize_dept(sys.argv[1] if len(sys.argv) > 1 else "69")
+
+
+# Le département est passé en argument : python main.py 38  (défaut 69).
 # .upper().zfill(2) couvre tous les cas : "1" -> "01", "69" -> "69",
 # la Corse "2A"/"2B" et l'outre-mer "971"... restent tels quels.
-DEPT = (sys.argv[1] if len(sys.argv) > 1 else "69").upper().zfill(2)
+#DEPT = (sys.argv[1] if len(sys.argv) > 1 else "69").upper().zfill(2)
 
 EDUCATION = "https://data.education.gouv.fr/api/explore/v2.1/catalog/datasets"
 FINESS = "https://public.opendatasoft.com/api/explore/v2.1/catalog/datasets"
 CULTURE = "https://data.culture.gouv.fr/api/explore/v2.1/catalog/datasets"
-
+FESTIVALS = "https://data.culture.gouv.fr/api/explore/v2.1/catalog/datasets/festivals-global-festivals-_-pl/records"
 
 SOURCES = [
-    {
+        {
         "table": "lycee",
         "key": "uai",
         "url": f"{EDUCATION}/fr-en-annuaire-education/records",
@@ -80,6 +103,17 @@ SOURCES = [
         "order_by": "code_bib",
         "clean": clean.clean_culture,
     },
+
+    {
+        # Festivals : dataset Opendatasoft de data.culture, avec code_insee_commune.
+        "table": "festivals",
+        "key": "identifiant",
+        "url": f"{FESTIVALS}",
+        "where": f'startswith(code_insee_commune, "{DEPT}")',
+        "select": "identifiant, nom_du_festival,region_principale_de_deroulement,departement_principal_de_deroulement,commune_principale_de_deroulement,code_postal_de_la_commune_principale_de_deroulement,code_insee_commune,adresse_postale,site_internet_du_festival,discipline_dominante,annee_de_creation_du_festival,periode_principale_de_deroulement_du_festival,geocodage_xy",
+        "order_by": "identifiant",
+        "clean": clean.clean_festivals,
+    }
 ]
 
 conn = load.connect()
@@ -117,6 +151,7 @@ for source in SOURCES:
                 offset,
             )
         except requests.RequestException as e:
+            
             # l'API bloque (429), timeout ou est en panne : on s'arrête proprement
             # pour cette source. Ce qui est chargé est gardé (commit par page), on
             # relancera le département pour reprendre.
@@ -127,6 +162,7 @@ for source in SOURCES:
             break  # plus de pages
 
         # on nettoie le chunk, on garde les rows avec une key, une commune connue, pas encore vues
+        print(f"  {source['table']:9}: page {offset//100 + 1} ({len(rows)} lignes)")
         chunk = []
         for row in rows:
             # Option 1 : un if/elif sur source["table"] pour choisir la fonction

@@ -128,21 +128,24 @@ CREATE TABLE IF NOT EXISTS entreprise_btp (
 );
 
 
-CREATE TABLE festivals_france (
-    id SERIAL PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS festivals (
+   
+    identifiant VARCHAR(50) PRIMARY KEY,          -- ex : FEST_11262_4331
 
-    identifiant_festival VARCHAR(50),          -- ex : FEST_11262_4331
     nom_du_festival TEXT,
-    region_principale TEXT,
-    departement_principal TEXT,
-    commune_principale TEXT,
+    region_principale_de_deroulement TEXT,
+    departement_principal_de_deroulement TEXT,
+    commune_principale_de_deroulement TEXT,
 
-    code_postal VARCHAR(10),
-    code_insee_commune TEXT REFERENCES commune (insee_code),
+    code_postal_de_la_commune_principale_de_deroulement TEXT,
+    insee_code TEXT REFERENCES commune (insee_code),
 
+    
     adresse_postale TEXT,
     discipline_dominante TEXT,
-    site_internet TEXT,
+    site_internet_du_festival TEXT,
+    annee_de_creation_du_festival INTEGER,
+    periode_principale_de_deroulement_du_festival TEXT,
 
     latitude DOUBLE PRECISION,
     longitude DOUBLE PRECISION,

@@ -33,22 +33,22 @@ print("Nombre total de festivals récupérés :", len(all_festivals))
 
 # Affichage des 5 premiers festivals
 for f in all_festivals[:5]:
+    row = f.get("fields", f)
+    geo = row.get("geocodage_xy", {})
 
-    identifiant_festival = f.get("identifiant")
-    nom = f.get("nom_du_festival")
-    region = f.get("region_principale_de_deroulement")
-    departement = f.get("departement_principal_de_deroulement")
-    commune = f.get("commune_principale_de_deroulement")
-    code_postal = f.get("code_postal_de_la_commune_principale")  
-    code_insee = f.get("code_insee_commune")  
-    adresse = f.get("adresse_postale")
-    discipline = f.get("discipline_dominante")
-    site = f.get("site_internet_du_festival")
-    
-
-    geo = f.get("geocodage_xy", {})
+    identifiant_festival = row.get("identifiant")
+    nom = row.get("nom_du_festival")
+    region = row.get("region_principale_de_deroulement")
+    departement = row.get("departement_principal_de_deroulement")
+    commune = row.get("commune_principale_de_deroulement")
+    code_postal = row.get("code_postal_de_la_commune_principale_de_deroulement")
+    code_insee = row.get("code_insee")
+    adresse = row.get("adresse_postale")
+    site = row.get("site_internet_du_festival")
+    discipline = row.get("discipline_dominante")
     lat = geo.get("lat")
     lon = geo.get("lon")
+
 
 
     print("\nIdentifiant :", identifiant_festival)

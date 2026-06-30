@@ -106,3 +106,33 @@ def clean_btp(etab, nom):
         "longitude": _to_float(etab.get("longitude")),
         "insee_code": normalize_insee(etab.get("commune")),
     }
+
+
+def clean_festivals(row):
+    geo = row.get("geocodage_xy") or {}
+    code_insee = normalize_insee(row.get("code_insee_commune"))
+
+    return {
+        "identifiant": row.get("identifiant"),
+        "nom_du_festival": row.get("nom_du_festival"),
+
+        "region_principale_de_deroulement": row.get("region_principale_de_deroulement"),
+        "departement_principal_de_deroulement": row.get("departement_principal_de_deroulement"),
+        "commune_principale_de_deroulement": row.get("commune_principale_de_deroulement"),
+        "code_postal_de_la_commune_principale_de_deroulement": row.get("code_postal_de_la_commune_principale_de_deroulement"),
+
+        # colonne SQL correcte
+        "insee_code": code_insee,
+
+        "adresse_postale": row.get("adresse_postale"),
+        "site_internet_du_festival": row.get("site_internet_du_festival"),
+        "discipline_dominante": row.get("discipline_dominante"),
+        "annee_de_creation_du_festival": _to_int(row.get("annee_de_creation_du_festival")),
+        "periode_principale_de_deroulement_du_festival": row.get("periode_principale_de_deroulement_du_festival"),
+
+        "latitude": _to_float(geo.get("lat")),
+        "longitude": _to_float(geo.get("lon")),
+    }
+
+
+                

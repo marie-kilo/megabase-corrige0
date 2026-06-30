@@ -17,8 +17,8 @@ pip install -r requirements.txt
 
       # un département : géo + mairies + lycées + collèges + pharmacies + 
                        # EHPAD + bibliothèques
-python3 btp.py 69      # le BTP du département (API à part, voir plus bas)
-python3 gares.py       # les gares : un seul passage, pour toute la France
+python btp.py 69      # le BTP du département (API à part, voir plus bas)
+python gares.py       # les gares : un seul passage, pour toute la France
 ```
 
 
@@ -30,14 +30,23 @@ python3 gares.py       # les gares : un seul passage, pour toute la France
 # La liste des 101 départements (pas de 20 : c'est 2A/2B ; DOM 971-974, 976)
 DEPTS="01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 2A 2B 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59 60 61 62 63 64 65 66 67 68 69 70 71 72 73 74 75 76 77 78 79 80 81 82 83 84 85 86 87 88 89 90 91 92 93 94 95 971 972 973 974 976"
 
+# ou Pour France entier:
+```
+for d in $(seq -w 1 95); do python main.py $d; done
+python main.py 2A
+python main.py 2B
+for d in 971 972 973 974 975 976; do python main.py $d; done
+for d in 977 978 984 986 987 988; do python main.py $d; done
+```
+
 # 1) Sources par département : géo + mairies + lycées + collèges + pharmacies + EHPAD + bibliothèques
-for d in $DEPTS; do python3 main.py $d; done
+for d in $DEPTS; do python main.py $d; done
 
 # 2) Gares : un seul passage global
-python3 gares.py
+python gares.py
 
 # 3) BTP par département (l'API plafonne le débit, donc la reprise sert beaucoup)
-for d in $DEPTS; do python3 btp.py $d; done
+for d in $DEPTS; do python btp.py $d; done
 ```
 
 

@@ -20,6 +20,7 @@ def fetch_communes(dept):
         timeout=30,
     )
     resp.raise_for_status()
+    #print(resp.status_code)
     return resp.json()
 
 
@@ -37,4 +38,5 @@ def fetch_page(url, where, select, order_by, offset):
         timeout=30,
     )
     resp.raise_for_status()
+   #print(resp.status_code)
     return resp.json().get("results", [])
