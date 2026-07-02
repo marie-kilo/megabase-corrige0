@@ -2,7 +2,7 @@ import subprocess
 
 def run(dept):
     print(f">>> Département {dept}")
-    subprocess.run(["python3", "main.py", str(dept)], check=True)
+    subprocess.run(["python", "main.py", str(dept)], check=True)
 
 print("=== Lancement pour toute la France ===")
 

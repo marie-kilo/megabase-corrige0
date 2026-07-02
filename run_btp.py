@@ -2,9 +2,9 @@ import subprocess
 
 def run(dept):
     print(f"=== département {dept} ===")
-    subprocess.run(["python", "gares.py", str(dept)], check=True)
+    subprocess.run(["python3", "btp.py", str(dept)], check=True)
 
-print("=== Lancement des gares pour toute la France ===")
+print("=== Lancement des entreprises BTP pour toute la France ===")
 
 # Métropole 01 → 95
 for d in range(1, 96):
@@ -22,4 +22,4 @@ for d in [971, 972, 973, 974, 975, 976]:
 for d in [977, 978, 984, 986, 987, 988]:
     run(d)
 
-print("=== Fin du run_gares ===")
+print("=== Fin du run_btp ===")
