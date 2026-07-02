@@ -114,3 +114,83 @@ JOIN commune c ON ph.insee_code = c.insee_code
 JOIN departement d ON c.code_departement = d.code_departement
 GROUP BY d.name
 ORDER BY moyenne_pharmacies_par_commune DESC;
+
+
+-- 3. CROISER LES SOURCES
+------------------------------------------------------------
+
+-- 3.1 Communes qui ont un lycée mais aucune pharmacie
+SELECT c.name AS commune,
+       d.name AS departement
+FROM commune c
+JOIN departement d ON c.code_departement = d.code_departement
+LEFT JOIN lycee l ON c.insee_code = l.insee_code
+LEFT JOIN pharmacie p ON c.insee_code = p.insee_code
+WHERE l.uai IS NOT NULL
+  AND p.finess IS NULL
+ORDER BY d.name, c.name;
+
+
+-- 3.2 Profil de service d’une commune (lycées, collèges, pharmacies, ehpad)
+SELECT c.name AS commune,
+       d.name AS departement,
+       COALESCE(l.nb_lycees, 0) AS lycees,
+       COALESCE(co.nb_colleges, 0) AS colleges,
+       COALESCE(ph.nb_pharmacies, 0) AS pharmacies,
+       COALESCE(eh.nb_ehpad, 0) AS ehpad
+FROM commune c
+JOIN departement d ON c.code_departement = d.code_departement
+
+LEFT JOIN (
+    SELECT insee_code, COUNT(*) AS nb_lycees
+    FROM lycee GROUP BY insee_code
+) l ON c.insee_code = l.insee_code
+
+LEFT JOIN (
+    SELECT insee_code, COUNT(*) AS nb_colleges
+    FROM college GROUP BY insee_code
+) co ON c.insee_code = co.insee_code
+
+LEFT JOIN (
+    SELECT insee_code, COUNT(*) AS nb_pharmacies
+    FROM pharmacie GROUP BY insee_code
+) ph ON c.insee_code = ph.insee_code
+
+LEFT JOIN (
+    SELECT insee_code, COUNT(*) AS nb_ehpad
+    FROM ehpad GROUP BY insee_code
+) eh ON c.insee_code = eh.insee_code
+
+ORDER BY d.name, c.name;
+
+
+----4. INDICATEURS
+
+
+----4.1 Habitants par pharmacie (zones sous-dotées)
+
+            
+SELECT d.name AS departement,
+       SUM(c.population) AS population_totale,
+       COUNT(p.finess) AS nb_pharmacies,
+       ROUND(SUM(c.population)::numeric / NULLIF(COUNT(p.finess),0), 2)
+           AS habitants_par_pharmacie
+FROM commune c
+JOIN departement d ON c.code_departement = d.code_departement
+LEFT JOIN pharmacie p ON c.insee_code = p.insee_code
+GROUP BY d.name
+ORDER BY habitants_par_pharmacie DESC;
+      
+
+----4.2 Taux d’inscription aux bibliothèques
+
+SELECT d.name AS departement,
+       SUM(b.population) AS population_totale,
+       SUM(b.borrowers) AS emprunteurs,
+       ROUND(SUM(b.borrowers)::numeric / NULLIF(SUM(b.population),0), 4)
+           AS taux_inscription
+FROM bibliotheque b
+JOIN commune c ON b.insee_code = c.insee_code
+JOIN departement d ON c.code_departement = d.code_departement
+GROUP BY d.name
+ORDER BY taux_inscription DESC;
