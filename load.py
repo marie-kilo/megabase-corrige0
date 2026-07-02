@@ -5,15 +5,16 @@ import pathlib
 
 import psycopg2
 
-DB_URL = (
-    "dbname=megabase0 "
-    "user=postgres "
-    "password=Mkilo1990 "
-    "host=localhost "
-    "port=5432"
-)
+#DB_URL = (
+ #   "dbname=megabase0 "
+  #  "user=postgres "
+   # "password=Mkilo1990 "
+   # ""host=localhost "
+    #"port=5432"
+#)
 
-#DB_URL = os.environ.get("DATABASE_URL", "dbname=megabase0")
+
+DB_URL = os.environ.get("DATABASE_URL", "dbname=megabase0")
 #postgres://username:password@localhost:5432/data_quality
 
 SCHEMA = pathlib.Path(__file__).resolve().parent / "schema.sql"
