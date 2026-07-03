@@ -5,13 +5,13 @@ import pathlib
 
 import psycopg2
 
-#DB_URL = (
- #   "dbname=megabase0 "
-  #  "user=postgres "
-   # "password=Mkilo1990 "
-   # ""host=localhost "
-    #"port=5432"
-#)
+# DB_URL =(
+#     "dbname=megabase0 "
+#     "user=postgres "
+#     "password=Mkilo1990 "
+#     "host=localhost "
+#     "port=5432"
+# )
 
 
 DB_URL = os.environ.get("DATABASE_URL", "dbname=megabase0")

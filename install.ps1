@@ -1,0 +1,1 @@
+Redirecting to <a href="https://doc.scalingo.com/platform/cli/start">https://doc.scalingo.com/platform/cli/start</a>

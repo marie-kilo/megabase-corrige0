@@ -116,6 +116,7 @@ GROUP BY d.name
 ORDER BY moyenne_pharmacies_par_commune DESC;
 
 
+
 -- 3. CROISER LES SOURCES
 ------------------------------------------------------------
 
@@ -182,8 +183,7 @@ GROUP BY d.name
 ORDER BY habitants_par_pharmacie DESC;
       
 
-----4.2 Taux d’inscription aux bibliothèques
-
+-- 4.2 Taux d’inscription aux bibliothèques
 SELECT d.name AS departement,
        SUM(b.population) AS population_totale,
        SUM(b.borrowers) AS emprunteurs,
@@ -194,3 +194,16 @@ JOIN commune c ON b.insee_code = c.insee_code
 JOIN departement d ON c.code_departement = d.code_departement
 GROUP BY d.name
 ORDER BY taux_inscription DESC;
+
+
+-- 4.3 Classement des départements par densité de lycées
+SELECT d.name AS departement,
+       COUNT(l.uai) AS nb_lycees,
+       SUM(c.population) AS population_totale,
+       ROUND(COUNT(l.uai)::numeric / NULLIF(SUM(c.population),0), 6)
+           AS lycees_par_habitant
+FROM lycee l
+JOIN commune c ON l.insee_code = c.insee_code
+JOIN departement d ON c.code_departement = d.code_departement
+GROUP BY d.name
+ORDER BY lycees_par_habitant DESC;

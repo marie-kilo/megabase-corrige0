@@ -19,7 +19,9 @@ Toutes les requêtes se lancent sur votre base, par exemple :
 
 ```bash
 $env:PATH += ";C:\Program Files\PostgreSQL\18\bin"
-psql -d megabase -f analyses.sql
+psql -d megabase0 -f analyses.sql
+
+#psql -U postgres -d megabase0 -f analyses.sql
 ```
 
 Rappel du modèle : la **commune** est au centre (clé `insee_code`), chaque typologie
