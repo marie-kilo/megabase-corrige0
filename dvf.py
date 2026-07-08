@@ -4,11 +4,34 @@ import sys
 import os
 from sqlalchemy import create_engine, text
 import load
-import psycopg2
+
+
 
 # postgresql+psycopg2://postgres:Mkilo1990@localhost:5432/megabase0
 DB_URL = os.environ.get("DATABASE_URL", "postgresql://localhost/megabase0")
 engine = create_engine(DB_URL.replace("postgres://", "postgresql://", 1))
+
+with engine.begin() as conn:
+#    conn.execute(text("DROP TABLE IF EXISTS dvf"))  
+    conn.execute(
+        text(
+            """
+           CREATE TABLE IF NOT EXISTS dvf (
+                id_dvf          SERIAL PRIMARY KEY,
+                id_mutation     TEXT,
+                date_mutation   TEXT,
+                nature_mutation TEXT,
+                valeur_fonciere  DOUBLE PRECISION,  
+                id_parcelle     TEXT,
+                type_local      TEXT,
+                nombre_pieces_principales INTEGER,
+                nom_commune      TEXT,
+                longitude       DOUBLE PRECISION,
+                latitude        DOUBLE PRECISION,
+                insee_code       TEXT REFERENCES commune (insee_code))
+            """
+        )
+    )
 
 DEPT = (sys.argv[1] if len(sys.argv) > 1 else "69").upper().zfill(2)
 
@@ -28,7 +51,7 @@ df = df[["id_mutation",
         "longitude",
         "latitude",
         "insee_code",
-        "nom_commune"]]
+        "nom_commune"]].head(5)
 # convertit les colonnes numériques en type numérique
 df["valeur_fonciere"] = pd.to_numeric(df["valeur_fonciere"], errors='coerce')
 df["nombre_pieces_principales"] = df["nombre_pieces_principales"].astype("Int64")
@@ -72,27 +95,7 @@ with engine.begin() as conn:
     """)
 
 
-with engine.begin() as conn:
-#    conn.execute(text("DROP TABLE IF EXISTS dvf"))  
-    conn.execute(
-        text(
-            """
-           CREATE TABLE IF NOT EXISTS dvf (
-                id_dvf          SERIAL PRIMARY KEY,
-                id_mutation     TEXT,
-                date_mutation   TEXT,
-                nature_mutation TEXT,
-                valeur_fonciere  DOUBLE PRECISION,  
-                id_parcelle     TEXT,
-                type_local      TEXT,
-                nombre_pieces_principales INTEGER,
-                nom_commune      TEXT,
-                longitude       DOUBLE PRECISION,
-                latitude        DOUBLE PRECISION,
-                insee_code       TEXT REFERENCES commune (insee_code))
-            """
-        )
-    )
+
 
 df.to_sql("dvf", engine, if_exists="append", index=False, method="multi", chunksize=1000)
 
