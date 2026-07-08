@@ -182,6 +182,18 @@ LEFT JOIN pharmacie p ON c.insee_code = p.insee_code
 GROUP BY d.name
 ORDER BY habitants_par_pharmacie DESC;
       
+---- correction de la requête de Selim:
+
+SELECT d.name AS departement, pop.habitants, ph.pharmacies,
+       round(pop.habitants::numeric / ph.pharmacies, 0) AS habitants_par_pharmacie
+FROM departement d
+JOIN (SELECT code_departement, sum(population) AS habitants
+      FROM commune GROUP BY code_departement) pop ON pop.code_departement = d.code_departement
+JOIN (SELECT c.code_departement, count(*) AS pharmacies
+      FROM pharmacie p JOIN commune c ON c.insee_code = p.insee_code
+      GROUP BY c.code_departement) ph ON ph.code_departement = d.code_departement
+ORDER BY habitants_par_pharmacie DESC;
+
 
 -- 4.2 Taux d’inscription aux bibliothèques
 SELECT d.name AS departement,
@@ -207,3 +219,24 @@ JOIN commune c ON l.insee_code = c.insee_code
 JOIN departement d ON c.code_departement = d.code_departement
 GROUP BY d.name
 ORDER BY lycees_par_habitant DESC;
+
+
+-- BONUS : Top 3 communes les mieux dotées en pharmacies par département
+------------------------------------------------------------
+
+SELECT *
+FROM (
+    SELECT d.name AS departement,
+           c.name AS commune,
+           COUNT(p.finess) AS nb_pharmacies,
+           ROW_NUMBER() OVER (
+               PARTITION BY d.code_departement
+               ORDER BY COUNT(p.finess) DESC
+           ) AS rn
+    FROM commune c
+    JOIN departement d ON c.code_departement = d.code_departement
+    LEFT JOIN pharmacie p ON c.insee_code = p.insee_code
+    GROUP BY d.name, d.code_departement, c.name
+) t
+WHERE rn <= 3
+ORDER BY departement, nb_pharmacies DESC;

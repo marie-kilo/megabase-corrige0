@@ -58,7 +58,7 @@ SELECT r.name AS region_name, d.name AS dept_name, SUM(c.population) as total_po
 FROM commune AS c
 INNER JOIN departement AS d ON c.code_departement = d.code_departement
 INNER JOIN region AS r ON d.code_region = r.code_region
-GROUP BY ROLLUP(r.name, d.name)
+GROUP BY ROLLUP(r.name, d.name);
 
 -- 2.2 Classement des dpts par nombre de phamarcies (ordre décroissant)
 SELECT d.name AS departement, count(p.finess) AS pharmacies

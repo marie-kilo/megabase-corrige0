@@ -152,3 +152,20 @@ CREATE TABLE IF NOT EXISTS festivals (
 
     date_import TIMESTAMP DEFAULT NOW()
 );
+
+
+--- ventes immobilières 
+
+CREATE TABLE IF NOT EXISTS dvf (
+    id_dvf          SERIAL PRIMARY KEY,
+    id_mutation     TEXT,
+    date_mutation   TEXT,
+    nature_mutation TEXT,
+    valeur_fonciere  DOUBLE PRECISION,  
+    id_parcelle     TEXT,
+    type_local      TEXT,
+    nombre_pieces_principales INTEGER,
+    longitude       DOUBLE PRECISION,
+    latitude        DOUBLE PRECISION,
+    insee_code       TEXT REFERENCES commune (insee_code)
+);

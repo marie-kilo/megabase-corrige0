@@ -5,6 +5,10 @@ import pathlib
 
 import psycopg2
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # DB_URL =(
 #     "dbname=megabase0 "
 #     "user=postgres "
