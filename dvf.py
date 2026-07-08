@@ -51,7 +51,7 @@ df = df[["id_mutation",
         "longitude",
         "latitude",
         "insee_code",
-        "nom_commune"]].head(5)
+        "nom_commune"]]
 # convertit les colonnes numériques en type numérique
 df["valeur_fonciere"] = pd.to_numeric(df["valeur_fonciere"], errors='coerce')
 df["nombre_pieces_principales"] = df["nombre_pieces_principales"].astype("Int64")
