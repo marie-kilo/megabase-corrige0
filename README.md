@@ -133,3 +133,7 @@ Ce qui rend la reprise sûre :
 `offset + limit` ne peut pas dépasser 10000. Comme on requête par département, chaque
 résultat est petit, donc on ne touche jamais cette limite. Un garde-fou coupe quand
 même à 10000 par sécurité. Doc : https://help.opendatasoft.com/apis/ods-explore-v2/
+
+## PSQL 
+- $ export PATH=$PATH:/c/Program\ Files/PostgreSQL/18/bin
+- $ psql -U postgres -d megabase0 -h localhost -p 5432

@@ -1,0 +1,69 @@
+@everyone 
+
+voici un petit script pour définir deux fonctions simples en SQL
+n'hésite pas l'exploiter pour la partie sur les fonctions 
+(avec la même démarche que lors du livecoding ou Salma adaptait le script de demo des indexs
+
+```
+import os
+
+import psycopg2
+
+conn = psycopg2.connect(os.environ.get("DATABASE_URL", "dbname=megabase0"))
+conn.autocommit = True
+cur = conn.cursor()
+
+cur.execute("DROP SCHEMA IF EXISTS demo_fonctions CASCADE")
+cur.execute("CREATE SCHEMA demo_fonctions")
+cur.execute("""
+    CREATE TABLE demo_fonctions.commune (insee_code text, nom text, departement text, population int);
+    INSERT INTO demo_fonctions.commune VALUES
+    ('69123', 'Lyon',         'Rhône', 522250),
+    ('69266', 'Villeurbanne', 'Rhône', 156928),
+    ('59350', 'Lille',        'Nord',  236234),
+    ('59512', 'Roubaix',      'Nord',   98828);
+    CREATE TABLE demo_fonctions.fait (insee_code text, type text, nb int);
+    INSERT INTO demo_fonctions.fait VALUES
+    ('69123', 'pharmacie', 158), ('69123', 'lycee', 68),
+    ('69266', 'pharmacie',  52), ('69266', 'lycee', 12),
+    ('59350', 'pharmacie',  95), ('59350', 'lycee', 41),
+    ('59512', 'pharmacie',  38);
+""")
+
+# Fonction scalaire : (s'appelle dans le SELECT)
+cur.execute("""
+    CREATE FUNCTION demo_fonctions.pourcentage(p_part numeric, p_total numeric)
+    RETURNS numeric
+    LANGUAGE sql AS $$
+        SELECT round(100.0 * p_part / NULLIF(p_total, 0), 1);
+    $$
+""")
+cur.execute("SELECT demo_fonctions.pourcentage(52, 343)")
+print("pourcentage(52, 343) :", cur.fetchone()[0])
+
+# RETURNS TABLE : la fonction rend des lignes, s'appelle dans le FROM.
+# DEFAULT 3 : le second paramètre devient optionnel.
+cur.execute("""
+    CREATE FUNCTION demo_fonctions.top_communes(p_type text, p_n integer DEFAULT 3)
+    RETURNS TABLE (nom text, departement text, nb int)
+    LANGUAGE sql STABLE AS $$
+        SELECT c.nom, c.departement, f.nb
+        FROM demo_fonctions.fait f
+        JOIN demo_fonctions.commune c ON c.insee_code = f.insee_code
+        WHERE f.type = p_type
+        ORDER BY f.nb DESC
+        LIMIT p_n;
+    $$
+""")
+
+
+cur.execute("SELECT * FROM demo_fonctions.top_communes('pharmacie', 2)")
+print("top_communes('pharmacie', 2) :", cur.fetchall())
+cur.execute("SELECT * FROM demo_fonctions.top_communes('lycee')")
+print("top_communes('lycee') :", cur.fetchall())
+
+# DROP : la signature fait partie du nom (surcharge possible).
+cur.execute("DROP FUNCTION demo_fonctions.pourcentage(numeric, numeric)")
+
+conn.close()
+```
