@@ -2,8 +2,8 @@
 #Après plus besoin du container web
 
 web: python -c "import http.server, os; http.server.HTTPServer(('0.0.0.0', int(os.environ.get('PORT', 8080))), http.server.BaseHTTPRequestHandler).serve_forever()"
-worker: python main2.py 
-
+#worker: python main2.py 
+worker: python run_sql.py sql_avance.sql
 
 # worker: for d in $(seq -w 1 95); do python main2.py $d; done
 # python main2.py 2A

@@ -28,10 +28,18 @@ CREATE TABLE IF NOT EXISTS entrepot.dim_type (
 -- TABLE DE FAITS
 -- ------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS entrepot.fait_etablissement (
+    fait_key BIGSERIAL PRIMARY KEY,
     insee_code TEXT REFERENCES entrepot.dim_commune(insee_code),
     type       TEXT REFERENCES entrepot.dim_type(type),
-    nb         INTEGER
+        nb         INTEGER
 );
+
+ALTER TABLE entrepot.fait_etablissement
+ADD CONSTRAINT fait_etablissement_insee_code_type_key
+UNIQUE (insee_code, type);
+
+
+
 
 -- ------------------------------------------------------------
 -- RECONSTRUCTION (TRUNCATE)
