@@ -18,7 +18,16 @@ import sys
 
 import psycopg2
 
-DB_URL = os.environ.get("DATABASE_URL", "dbname=megabase0")
+DB_URL =(
+        "dbname=megabase0 "
+        "user=postgres "
+        "password=Mkilo1990 "
+        "host=localhost "
+        "port=5432"
+ 
+)
+conn = psycopg2.connect(os.environ.get("DATABASE_URL", DB_URL ))
+#DB_URL = os.environ.get("DATABASE_URL", "dbname=megabase0")
 
 if len(sys.argv) < 2:
     sys.exit("usage : python run_sql.py fichier.sql")
